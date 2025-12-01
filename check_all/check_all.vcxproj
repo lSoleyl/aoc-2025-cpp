@@ -140,6 +140,11 @@
   <ItemGroup>
     <Text Include="..\data\results.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\01\01.vcxproj">
+      <Project>{14b7568a-13d9-4895-98ed-e7d26e9766e0}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
