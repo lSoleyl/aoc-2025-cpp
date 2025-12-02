@@ -3,6 +3,8 @@
 #include <common/task.hpp>
 #include <common/regex.hpp>
 
+#include <set>
+
 /** Caluclate power of 10 for huge numbers (without risk of double conversion errors)
  */
 int64_t power10(int exponent) {
@@ -48,22 +50,24 @@ struct Range {
     return number >= begin && number < end;
   }
 
-  /** Calculates the invalid id sum for this range (Part 1)
+  /** Calculates the invalid id sum for this range (Part 1 & Part 2)
    *  The main idea is to determine the a prefix, which we will increment until we are out of range.
    *  Then we can check the numbers directly by simply duplicating the prefix multiple times.
    * 
    *  This is a much more efficient an direct solution than searching for repetitions in all numbers within the
    *  range, because we only check the possible candiates and don't check every number in the range.
    */
-  int64_t invalidIdSum() const {
-    int64_t sum = 0;
-
+  void invalidIdSums(int64_t& part1, int64_t& part2) const {
     auto beginDigits = static_cast<int>(std::log10(begin)) + 1;
     auto lastDigits = static_cast<int>(std::log10(end-1)) + 1;
+
+    // We must collect the part 2 numbers in a set, before adding them up, because we may find the same
+    // number multiple times eg 222222 -> 222 222 & 22 22 22 & 2 2 2 2 2 2
+    std::set<int64_t> part2Numbers;
+    
     for (int digits = beginDigits; digits <= lastDigits; ++digits) {
-      // Ignore all odd digit numbers when checking for numbers with 2 parts
-      //for (int parts = digits; parts > 1; --parts) {
-      int parts = 2;
+      // Check all possible splits (of the digits)
+      for (int parts = digits; parts > 1; --parts) {  // Try out all part sizes (for Part2)
         if (digits % parts == 0) {
           // The divisor is used to extract the prefix from the number and continue incrementing it
           auto divisor = static_cast<int>(power10(digits/parts));
@@ -76,15 +80,19 @@ struct Range {
             auto number = repeatNumber(prefix, divisor, parts);
             // We the range may not contain the number if we have 288352 as begin, then we start checking for 288288, which is not in the range
             if (contains(number)) {
-              sum += number;
+              if (part2Numbers.insert(number).second) {
+                // Only add the first occurrence of the same number (see above)
+                part2 += number;
+              }
+              if (parts == 2) {
+                // Part 1 only sums up 2 part numbers
+                part1 += number;
+              }
             }
           }
         }
-      //}
+      }
     }
-
-    return sum;
-
   }
 
 
@@ -108,10 +116,10 @@ int main() {
 
 
   int64_t part1 = 0;
-  int part2 = 0;
+  int64_t part2 = 0;
 
   for (auto& range : ranges) {
-    part1 += range.invalidIdSum();
+    range.invalidIdSums(part1, part2);
   }
 
   std::cout << "Part 1: " << part1 << "\n";
