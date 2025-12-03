@@ -2,27 +2,9 @@
 #include <common/time.hpp>
 #include <common/task.hpp>
 #include <common/regex.hpp>
+#include <common/math.hpp>
 
 #include <set>
-
-/** Caluclate power of 10 for huge numbers (without risk of double conversion errors)
- */
-int64_t power10(int exponent) {
-  int64_t result = 1;
-  for (; exponent > 0; --exponent) {
-    result *= 10;
-  }
-  return result;
-}
-
-/** Divide by the same number multiple times
- */
-int64_t divPower(int64_t number, int64_t divisor, int divisorExponent) {
-  for (; divisorExponent > 0; --divisorExponent) {
-    number /= divisor;
-  }
-  return number;
-}
 
 /** Repeat a prefix multiple times be repeated multiplication and addition 12 -> 12*10+12 = 1212 -> ...
  */
@@ -58,8 +40,8 @@ struct Range {
    *  range, because we only check the possible candiates and don't check every number in the range.
    */
   void invalidIdSums(int64_t& part1, int64_t& part2) const {
-    auto beginDigits = static_cast<int>(std::log10(begin)) + 1;
-    auto lastDigits = static_cast<int>(std::log10(end-1)) + 1;
+    auto beginDigits = math::digits(begin);
+    auto lastDigits = math::digits(end - 1);
 
     // We must collect the part 2 numbers in a set, before adding them up, because we may find the same
     // number multiple times eg 222222 -> 222 222 & 22 22 22 & 2 2 2 2 2 2
@@ -70,13 +52,13 @@ struct Range {
       for (int parts = digits; parts > 1; --parts) {  // Try out all part sizes (for Part2)
         if (digits % parts == 0) {
           // The divisor is used to extract the prefix from the number and continue incrementing it
-          auto divisor = static_cast<int>(power10(digits/parts));
+          auto divisor = static_cast<int>(math::power10(digits/parts));
           // We can increment the prefix up to the divisor before we would increase the number of digits
           auto prefixEnd = divisor;
 
 
-          auto beginNumber = std::max(begin, power10(digits-1));
-          for (auto prefix = divPower(beginNumber, divisor, parts-1); repeatNumber(prefix, divisor, parts) < end && prefix < prefixEnd; ++prefix) {
+          auto beginNumber = std::max(begin, math::power10(digits-1));
+          for (auto prefix = math::divPower(beginNumber, divisor, parts-1); repeatNumber(prefix, divisor, parts) < end && prefix < prefixEnd; ++prefix) {
             auto number = repeatNumber(prefix, divisor, parts);
             // We the range may not contain the number if we have 288352 as begin, then we start checking for 288288, which is not in the range
             if (contains(number)) {
