@@ -6,15 +6,17 @@
 struct Warehouse : Field {
   Warehouse(std::istream&& input) : Field(std::move(input)) {}
 
-  int countAccessiblePaperRolls() const {
-    int accessiblePaperRolls = 0;
+  std::vector<Vector> collectAccessiblePaperRolls() const {
+    std::vector<Vector> accessiblePaperRolls;
     for (size_t offset = 0; offset < data.size(); ++offset) {
       if (data[offset] == '@') { // A paper roll
-        if (isLocationAccessible(fromOffset(offset))) {
-          ++accessiblePaperRolls;
+        auto rollPos= fromOffset(offset);
+        if (isLocationAccessible(rollPos)) {
+          accessiblePaperRolls.push_back(rollPos);
         }
       }
     }
+
     return accessiblePaperRolls;
   }
 
@@ -26,10 +28,13 @@ struct Warehouse : Field {
     int paperRolls = 0;
     for (auto direction : Vector::AllDirections()) {
       if (at(pos + direction) == '@') {
-        ++paperRolls;
+        if (++paperRolls >= 4) {
+          return false;
+        }
       }
     }
-    return paperRolls < 4;
+
+    return true;
   }
 
 };
@@ -41,8 +46,24 @@ int main() {
 
   Warehouse warehouse(task::input());
 
-  int64_t part1 = warehouse.countAccessiblePaperRolls();
+
+  auto accessibleRolls = warehouse.collectAccessiblePaperRolls();
+  int64_t part1 = accessibleRolls.size();
   int64_t part2 = 0;
+
+  while (!accessibleRolls.empty()) {
+    // Remove rolls
+    for (auto pos : accessibleRolls) {
+      warehouse[pos] = '.';
+    }
+
+    // Update removed count
+    part2 += accessibleRolls.size();
+
+    // Check for new rolls to remove
+    accessibleRolls = warehouse.collectAccessiblePaperRolls();
+  }
+  
 
 
   std::cout << "Part 1: " << part1 << "\n";
