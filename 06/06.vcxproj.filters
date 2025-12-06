@@ -18,6 +18,9 @@
     <Text Include="..\data\06\sample.txt">
       <Filter>Ressourcendateien</Filter>
     </Text>
+    <Text Include="..\data\06\input.txt">
+      <Filter>Ressourcendateien</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="06.cpp">

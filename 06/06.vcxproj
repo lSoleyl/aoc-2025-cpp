@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Text Include="..\data\06\input.txt" />
     <Text Include="..\data\06\sample.txt" />
   </ItemGroup>
   <ItemGroup>
