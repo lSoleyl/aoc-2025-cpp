@@ -19,6 +19,7 @@ using OperatorFn = int64_t (*)(int64_t a, int64_t b);
 struct Column {
   Column(char op) : width(1), operatorFn(op == '*' ? multiply : add) {}
 
+  // Part 1
   int64_t simpleResult() const {
     int64_t result = (operatorFn == add) ? 0 : 1; // initialize result to neutral element for the operation
 
@@ -28,6 +29,32 @@ struct Column {
 
     return result;
   }
+
+  // Part 2
+  int64_t correctResult() const {
+    int64_t result = (operatorFn == add) ? 0 : 1; // initialize result to neutral element for the operation
+    
+    // First construct the correct numbers to combine
+    std::vector<int64_t> correctNumbers(width); // we have as many numbers per column as we have subcolumns
+    for (auto& number : numbers) {
+      for (int i = 0; i < width; ++i) {
+        auto digit = number[i];
+        if (digit != ' ') { // <- I guess we should ignore spaces... 
+          correctNumbers[i] = math::appendDigit(correctNumbers[i], digit);
+        }
+      }
+    }
+
+    // Now we can finally combine them into the actual result
+    for (auto number : correctNumbers) {
+      result = operatorFn(result, number);
+    }
+
+    return result;
+  }
+
+
+
 
 
 
@@ -66,7 +93,7 @@ struct Tasks {
     
     for (auto& column : columns) {
       totalSum += column.simpleResult();
-      
+      correctSum += column.correctResult();
     }
 
     return { totalSum, correctSum };
@@ -106,7 +133,7 @@ private:
 int main() {
   common::Time t;
 
-  Tasks tasks(task::input("sample.txt"));
+  Tasks tasks(task::input());
   auto [part1,part2] = tasks.calculateResults();
 
   std::cout << "Part 1: " << part1 << "\n";
