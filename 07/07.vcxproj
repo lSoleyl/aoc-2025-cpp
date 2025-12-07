@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{aeaf8cc0-f6da-4e8b-97a5-3f5f43083a0e}</ProjectGuid>
-    <RootNamespace>checkall</RootNamespace>
+    <ProjectGuid>{db7d16bc-1116-46e5-bcd9-3d4614f55b3b}</ProjectGuid>
+    <RootNamespace>My07</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -135,33 +135,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="check_all.cpp" />
+    <ClCompile Include="07.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\data\results.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\01\01.vcxproj">
-      <Project>{14b7568a-13d9-4895-98ed-e7d26e9766e0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\02\02.vcxproj">
-      <Project>{7a402436-7b4c-4b18-93c6-b1b0fb4f576e}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\03\03.vcxproj">
-      <Project>{1f728688-51bf-4f2d-b99c-80f9522455c9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\04\04.vcxproj">
-      <Project>{11c4efba-271e-419b-a9f3-043500fa4f80}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\05\05.vcxproj">
-      <Project>{a62ec65f-c8ea-4b7f-868d-9d7d36d16e2f}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\06\06.vcxproj">
-      <Project>{b36e55b2-3c67-46bb-9c50-c827a0e83ca6}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\07\07.vcxproj">
-      <Project>{db7d16bc-1116-46e5-bcd9-3d4614f55b3b}</Project>
-    </ProjectReference>
+    <Text Include="..\data\07\input.txt" />
+    <Text Include="..\data\07\sample.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
