@@ -34,13 +34,16 @@ struct Playground {
     }
   }
 
-  // Part 1
-  int64_t countCircuits(int nConnections = 1000) {
+  // Part 1 & Part 2
+  std::pair<int64_t, int64_t> countCircuits() {
     std::vector<std::unordered_set<JunctionBox*>> circuits;
     auto sortedDistances = calculateSortedDistances();
 
-    for (int i = 0; i < nConnections; ++i) {
-      auto& entry = sortedDistances[i];
+    std::pair<int64_t, int64_t> results;
+
+    // Repeat the loop until all boxes are part of one large circuit
+    int connection = 0;
+    for (auto& entry : sortedDistances) {
       auto& boxA = boxes[entry.firstIndex];
       auto& boxB = boxes[entry.secondIndex];
 
@@ -61,12 +64,22 @@ struct Playground {
         circuitAPos->insert_range(*circuitBPos);
         circuits.erase(circuitBPos);
       }
+
+      if (circuits.size() == 1 && circuits[0].size() == boxes.size()) {
+        // We connected everything into one large circuit
+        results.second = static_cast<int64_t>(boxA.position.x) * boxB.position.x;
+        break; // we are done
+      }
+
+
+      if (++connection == 1000) {
+        // Now sort circuits descending by size and save the size of the 3 larges circuits
+        std::sort(circuits.begin(), circuits.end(), [](const auto& circuitA, const auto& circuitB) { return circuitA.size() > circuitB.size(); });
+        results.first = circuits[0].size() * circuits[1].size() * circuits[2].size();
+      }
     }
 
-    // Now sort circuits descending by size
-    std::sort(circuits.begin(), circuits.end(), [](const auto& circuitA, const auto& circuitB) { return circuitA.size() > circuitB.size(); });
-
-    return circuits[0].size() * circuits[1].size() * circuits[2].size();
+    return results;
   }
 
 
@@ -103,13 +116,8 @@ struct Playground {
 int main() {
   common::Time t;
 
-  int64_t part1 = 0;
-  int64_t part2 = 0;
-
   Playground playground(task::input());
-
-
-  part1 = playground.countCircuits();
+  auto [part1, part2] = playground.countCircuits();
 
   
   std::cout << "Part 1: " << part1 << "\n";
