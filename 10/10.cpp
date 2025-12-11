@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <numeric>
 #include <execution>
+#include <set>
 
 struct Button {
   uint16_t pattern = 0;
@@ -53,7 +54,7 @@ struct Machine {
 
   // Part 1 - find the minumum number of button presses by performing a simple BFS
   int minButtonPresses() const {
-    // Keep track of the configuration + pressed buttons
+    std::set<uint16_t> expanded;
     std::vector<uint16_t> current;
     std::vector<uint16_t> next;
     next.push_back(0);
@@ -74,10 +75,12 @@ struct Machine {
             if (newConfig == targetState) {
               return presses; // found the shortest number of button presses
             }
-            next.push_back(newConfig);
+            if (expanded.insert(newConfig).second) {
+              // First time reaching that state
+              next.push_back(newConfig);
+            }
           }
         }
-
       }
     }
 
