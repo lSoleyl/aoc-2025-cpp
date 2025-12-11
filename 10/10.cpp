@@ -4,6 +4,9 @@
 #include <common/split.hpp>
 #include <common/string_view.hpp>
 
+#include <algorithm>
+#include <numeric>
+#include <execution>
 
 struct Button {
   uint16_t pattern = 0;
@@ -55,20 +58,20 @@ struct Machine {
     std::vector<uint16_t> next;
     next.push_back(0);
 
+    auto targetState = indicators;
+
     for (int presses = 1; true; ++presses) {
       std::swap(current, next);
       next.clear();
 
-
-
       for (auto configuration : current) {
         // Get all the bits, which still need to be toggled
-        uint16_t configDelta = configuration ^ indicators;
+        uint16_t configDelta = configuration ^ targetState;
         for (auto& button : buttons) {
           // Only consider buttons, which contribute at least one indicator light towards the target state
           if ((button.pattern & configDelta) != 0) {
             uint16_t newConfig = configuration ^ button.pattern;
-            if (newConfig == indicators) {
+            if (newConfig == targetState) {
               return presses; // found the shortest number of button presses
             }
             next.push_back(newConfig);
@@ -100,11 +103,10 @@ struct Factory {
 
   // Part 1
   int minButtonPresses() const {
-    int totalPresses = 0;
-    for (auto& machine : machines) {
-      totalPresses += machine.minButtonPresses();
-    }
-    return totalPresses;
+    std::vector<int> presses(machines.size());
+
+    std::transform(std::execution::par_unseq, machines.begin(), machines.end(), presses.begin(), [](const Machine& machine) { return machine.minButtonPresses(); });
+    return std::reduce(presses.begin(), presses.end());
   }
 
   std::vector<Machine> machines;
