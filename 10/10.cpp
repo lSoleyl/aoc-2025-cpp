@@ -4,8 +4,6 @@
 #include <common/split.hpp>
 #include <common/string_view.hpp>
 
-#include <deque>
-
 
 struct Button {
   uint16_t pattern = 0;
@@ -53,19 +51,30 @@ struct Machine {
   // Part 1 - find the minumum number of button presses by performing a simple BFS
   int minButtonPresses() const {
     // Keep track of the configuration + pressed buttons
-    std::deque<std::pair<uint16_t, int>> queue;
-    queue.push_back({ 0, 0 });
+    std::vector<uint16_t> current;
+    std::vector<uint16_t> next;
+    next.push_back(0);
 
-    while (true) {
-      auto [configuration, presses] = queue.front();
-      queue.pop_front();
+    for (int presses = 1; true; ++presses) {
+      std::swap(current, next);
+      next.clear();
 
-      for (auto& button : buttons) {
-        uint16_t newConfig = configuration ^ button.pattern;
-        if (newConfig == indicators) {
-          return presses + 1; // found the shortest number of button presses
+
+
+      for (auto configuration : current) {
+        // Get all the bits, which still need to be toggled
+        uint16_t configDelta = configuration ^ indicators;
+        for (auto& button : buttons) {
+          // Only consider buttons, which contribute at least one indicator light towards the target state
+          if ((button.pattern & configDelta) != 0) {
+            uint16_t newConfig = configuration ^ button.pattern;
+            if (newConfig == indicators) {
+              return presses; // found the shortest number of button presses
+            }
+            next.push_back(newConfig);
+          }
         }
-        queue.push_back({ newConfig, presses + 1 });
+
       }
     }
 
