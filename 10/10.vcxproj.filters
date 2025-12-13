@@ -26,5 +26,8 @@
     <Text Include="..\data\10\input.txt">
       <Filter>Ressourcendateien</Filter>
     </Text>
+    <Text Include="..\data\10\tests.txt">
+      <Filter>Ressourcendateien</Filter>
+    </Text>
   </ItemGroup>
 </Project>
